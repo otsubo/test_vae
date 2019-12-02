@@ -57,15 +57,18 @@ class TestVae(chainer.dataset.DatasetMixin):
         rescaled_img = img.astype(np.uint8)
         datum = self.img_to_datum(rescaled_img)
         datum = datum.flatten()
-        return datum
+        if self._return_image:
+            return rescaled_img
+        else:
+            return datum
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    dataset = TestVae('train', return_all=True)
+    dataset = TestVae('train', return_image=True)
     for i in range(len(dataset)):
         img_rgb = dataset.get_example(i)
-        img_rgb = img_rgb.reshape(48, 64, 3)
-        img_rgb = img_rgb[:,:,::-1]
+        #img_rgb = img_rgb.reshape(48, 64, 3)
+        #img_rgb = img_rgb[:,:,::-1]
         plt.imshow(img_rgb)
         plt.show()
