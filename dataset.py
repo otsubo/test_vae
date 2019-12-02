@@ -11,7 +11,7 @@ from skimage.io import imread
 
 class TestVae(chainer.dataset.DatasetMixin):
 
-    mean_bgr = np.array((104.00698793, 116.66876762, 122.67891434))
+    #mean_bgr = np.array((104.00698793, 116.66876762, 122.67891434))
     mean_d = np.array((127, 127, 127))
     mean_hand = np.array((127))
 
@@ -38,9 +38,9 @@ class TestVae(chainer.dataset.DatasetMixin):
     def img_to_datum(self, img):
         img = img.copy()
         datum = img.astype(np.float32)
-        datum = datum[:, :, ::-1]  # RGB -> BGR
-        datum -= self.mean_bgr
-        datum = datum.transpose((2, 0, 1))
+        #datum = datum[:, :, ::-1]  # RGB -> BGR
+        #datum -= self.mean_bgr
+        #datum = datum.transpose((2, 0, 1))
         return datum
 
     def get_example(self, i):

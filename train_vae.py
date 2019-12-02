@@ -40,7 +40,7 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--out', '-o', default='result',
                         help='Directory to output the result')
-    parser.add_argument('--epoch', '-e', default=100, type=int,
+    parser.add_argument('--epoch', '-e', default=1, type=int,
                         help='number of epochs to learn')
     parser.add_argument('--dimz', '-z', default=20, type=int,
                         help='dimention of encoded vector')
@@ -69,13 +69,10 @@ def main():
 
     # Load the MNIST dataset
     train, test = get_data()
-    if args.test:
-        train, _ = chainer.datasets.split_dataset(train, 100)
-        test, _ = chainer.datasets.split_dataset(test, 100)
+    # if args.test:
+    #     train, _ = chainer.datasets.split_dataset(train, 100)
+    #     test, _ = chainer.datasets.split_dataset(test, 100)
 
-    # train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
-    # test_iter = chainer.iterators.SerialIterator(test, args.batchsize,
-    #                                              repeat=False, shuffle=False)
 
     # Set up an updater. StandardUpdater can explicitly specify a loss function
     # used in the training with 'loss_func' option
@@ -103,21 +100,21 @@ def main():
     # Visualize the results
     def save_images(x, filename):
         import matplotlib.pyplot as plt
-        fig, ax = plt.subplots(3, 3, figsize=(9, 9), dpi=100)
+        fig, ax = plt.subplots(3, 1)
         for ai, xi in zip(ax.flatten(), x):
-            ai.imshow(xi.reshape(28, 28))
+            ai.imshow(xi.reshape(48, 64, 3))
         fig.savefig(filename)
 
     model.to_cpu()
-    train_ind = [1, 3, 5, 10, 2, 0, 13, 15, 17]
-    x = chainer.Variable(np.asarray(train[train_ind]))
+    train_ind = [1, 2, 3]
+    x = chainer.Variable(np.asarray(train.dataset[train_ind]))
     with chainer.using_config('train', False), chainer.no_backprop_mode():
         x1 = model(x)
     save_images(x.data, os.path.join(args.out, 'train'))
     save_images(x1.data, os.path.join(args.out, 'train_reconstructed'))
 
-    test_ind = [3, 2, 1, 18, 4, 8, 11, 17, 61]
-    x = chainer.Variable(np.asarray(test[test_ind]))
+    test_ind = [3, 2, 1]
+    x = chainer.Variable(np.asarray(test.dataset[test_ind]))
     with chainer.using_config('train', False), chainer.no_backprop_mode():
         x1 = model(x)
     save_images(x.data, os.path.join(args.out, 'test'))
