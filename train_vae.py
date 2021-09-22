@@ -40,11 +40,11 @@ def main():
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--out', '-o', default='result',
                         help='Directory to output the result')
-    parser.add_argument('--epoch', '-e', default=1, type=int,
+    parser.add_argument('--epoch', '-e', default=10, type=int,
                         help='number of epochs to learn')
     parser.add_argument('--dimz', '-z', default=20, type=int,
                         help='dimention of encoded vector')
-    parser.add_argument('--batchsize', '-b', type=int, default=100,
+    parser.add_argument('--batchsize', '-b', type=int, default=5,
                         help='learning minibatch size')
     parser.add_argument('--test', action='store_true',
                         help='Use tiny datasets for quick tests')
@@ -57,7 +57,7 @@ def main():
     print('')
 
     # Prepare VAE model, defined in net.py
-    model = net.VAE(9216, args.dimz, 500)
+    model = net.VAE(2304, args.dimz, 500)
 
     # Setup an optimizer
     optimizer = chainer.optimizers.Adam()
@@ -102,12 +102,13 @@ def main():
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(3, 1)
         for ai, xi in zip(ax.flatten(), x):
-            ai.imshow(xi.reshape(48, 64, 3))
+            ai.imshow(xi.reshape(32, 24, 3))
         fig.savefig(filename)
 
     model.to_cpu()
     train_ind = [1, 2, 3]
     x = chainer.Variable(np.asarray(train.dataset[train_ind]))
+    import ipdb; ipdb.set_trace()
     with chainer.using_config('train', False), chainer.no_backprop_mode():
         x1 = model(x)
     save_images(x.data, os.path.join(args.out, 'train'))
@@ -115,14 +116,14 @@ def main():
 
     test_ind = [3, 2, 1]
     x = chainer.Variable(np.asarray(test.dataset[test_ind]))
-    with chainer.using_config('train', False), chainer.no_backprop_mode():
+    with chainer.using_config('test', False), chainer.no_backprop_mode():
         x1 = model(x)
     save_images(x.data, os.path.join(args.out, 'test'))
     save_images(x1.data, os.path.join(args.out, 'test_reconstructed'))
 
     # draw images from randomly sampled z
     z = chainer.Variable(
-        np.random.normal(0, 1, (9, args.dimz)).astype(np.float32))
+        np.random.normal(0, 1, (3, args.dimz)).astype(np.float32))
     x = model.decode(z)
     save_images(x.data, os.path.join(args.out, 'sampled'))
 

@@ -11,9 +11,9 @@ from skimage.io import imread
 
 class TestVae(chainer.dataset.DatasetMixin):
 
-    #mean_bgr = np.array((104.00698793, 116.66876762, 122.67891434))
-    mean_d = np.array((127, 127, 127))
-    mean_hand = np.array((127))
+    mean_bgr = np.array((104.00698793, 116.66876762, 122.67891434))
+    #mean_d = np.array((127, 127, 127))
+    #mean_hand = np.array((127))
 
     def __init__(self, split, return_image=False, return_all=False):
         assert split in ('train', 'val')
@@ -30,9 +30,9 @@ class TestVae(chainer.dataset.DatasetMixin):
     def _get_ids(self):
         ids = []
         dataset_dir = chainer.dataset.get_dataset_directory(
-            '2019_11_28_pr2')
+            'test')
         for data_id in os.listdir(dataset_dir):
-            ids.append(osp.join('cloth', data_id))
+            ids.append(osp.join('', data_id))
         return ids
 
     def img_to_datum(self, img):
@@ -44,11 +44,12 @@ class TestVae(chainer.dataset.DatasetMixin):
         return datum
 
     def get_example(self, i):
-        ann_id, data_id = self.ids[i].split('/')
-        assert ann_id in ('cloth')
+        data_id = self.ids[i]
+        #ann_id, data_id = self.ids[i].split('/')
+        #assert ann_id in ('cloth')
 
         dataset_dir = chainer.dataset.get_dataset_directory(
-            '2019_11_28_pr2')
+            'test')
 
         img_file_rgb = osp.join(dataset_dir, data_id, 'image.png')
         img_rgb = imread(img_file_rgb)
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     dataset = TestVae('train', return_image=True)
     for i in range(len(dataset)):
         img_rgb = dataset.get_example(i)
-        #img_rgb = img_rgb.reshape(48, 64, 3)
+        img_rgb = img_rgb.reshape(32, 24, 3)
         #img_rgb = img_rgb[:,:,::-1]
         plt.imshow(img_rgb)
         plt.show()
